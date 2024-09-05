@@ -1,60 +1,72 @@
 import express from "express";
 import * as dotenv from "dotenv";
 import fetch from "node-fetch";
+import { TextToImage } from "deepinfra"; // Import the DeepInfra SDK
 
 dotenv.config();
 
 const router = express.Router();
 
-// The Limewire API endpoint
-const LIMEWIRE_API_URL = "https://api.limewire.com/api/image/generation";
-
-// Limewire API requires a Bearer token for authentication
-const LIMEWIRE_API_KEY = process.env.LIMEWIRE_API_KEY;
+// DeepInfra API Key and Model
+const DEEPINFRA_API_KEY = process.env.DEEPINFRA_API_KEY;
+const MODEL = "black-forest-labs/FLUX-1-schnell"; // Model ID
 
 router.route("/").get((req, res) => {
-  res.send("Hello from Limewire Image Generation");
+  res.send("Hello from DeepInfra Image Generation");
 });
 
 router.route("/").post(async (req, res) => {
   try {
     const { prompt } = req.body;
 
-    // Make a POST request to Limewire's image generation API
-    const response = await fetch(LIMEWIRE_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Api-Version": "v1",
-        Accept: "application/json",
-        Authorization: `Bearer ${LIMEWIRE_API_KEY}`, // Add the API key from the environment variables
-      },
-      body: JSON.stringify({
-        prompt: prompt,
-        aspect_ratio: "1:1", // Default to square aspect ratio; this can be adjusted as needed
-      }),
-    });
+    // Initialize DeepInfra's TextToImage model with the API key
+    const model = new TextToImage(MODEL, DEEPINFRA_API_KEY);
 
-    const result = await response.json();
+    // Generate image using the provided prompt
+    const response = await model.generate({ prompt });
 
-    if (response.ok && result.status === "COMPLETED") {
-      // Extract the asset_url from the data array
-      const imageUrl = result.data[0].asset_url;
+    const imageUrl = response.images[0];
 
+    // Check if the URL is a data URL (base64) or a regular URL
+    if (imageUrl.startsWith("data:image/")) {
+      // It's a data URL
       res.status(200).json({
-        imageUrl: imageUrl,
-        message: "Image generated successfully using Limewire.",
+        imageUrl: imageUrl, // Directly use the base64 data URL
+        message: "Image generated successfully using DeepInfra.",
       });
+    } else if (
+      imageUrl.startsWith("http://") ||
+      imageUrl.startsWith("https://")
+    ) {
+      // It's an HTTP/HTTPS URL, fetch the image
+      const imageResponse = await fetch(imageUrl);
+
+      if (imageResponse.ok && imageResponse.body) {
+        const imageBuffer = await imageResponse.arrayBuffer();
+        const base64Image = Buffer.from(imageBuffer).toString("base64");
+
+        res.status(200).json({
+          imageUrl: `data:image/png;base64,${base64Image}`,
+          message: "Image generated successfully using DeepInfra.",
+        });
+      } else {
+        console.error(
+          "Failed to fetch the generated image from DeepInfra:",
+          imageResponse.status,
+          imageResponse.statusText
+        );
+        res
+          .status(500)
+          .json({ message: "Failed to fetch the generated image." });
+      }
     } else {
-      res
-        .status(500)
-        .json({ message: result.failure_reason || "Image generation failed." });
+      throw new Error("Unsupported URL format received.");
     }
   } catch (error) {
-    console.error(error);
+    console.error("Error in DeepInfra API call:", error); // Log more detailed error info
     res
       .status(500)
-      .send(error?.message || "An error occurred while generating the image");
+      .send(error?.message || "An error occurred while generating the image.");
   }
 });
 
