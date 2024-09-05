@@ -1,54 +1,60 @@
 import express from "express";
 import * as dotenv from "dotenv";
-import Replicate from "replicate";
+import fetch from "node-fetch";
 
 dotenv.config();
 
 const router = express.Router();
 
-const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN,
-});
+// The Limewire API endpoint
+const LIMEWIRE_API_URL = "https://api.limewire.com/api/image/generation";
+
+// Limewire API requires a Bearer token for authentication
+const LIMEWIRE_API_KEY = process.env.LIMEWIRE_API_KEY;
 
 router.route("/").get((req, res) => {
-  res.send("Hello from Replicate Image Generation");
+  res.send("Hello from Limewire Image Generation");
 });
 
 router.route("/").post(async (req, res) => {
   try {
     const { prompt } = req.body;
 
-    const output = await replicate.run(
-      "bingbangboom-lab/flux-dreamscape:b761fa16918356ee07f31fad9b0d41d8919b9ff08f999e2d298a5a35b672f47e",
-      {
-        input: {
-          model: "dev",
-          prompt: prompt,
-          width: 1024,
-          height: 1024,
-          num_outputs: 1,
-          guidance_scale: 7.5,
-          num_inference_steps: 50,
-        },
-      }
-    );
+    // Make a POST request to Limewire's image generation API
+    const response = await fetch(LIMEWIRE_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Api-Version": "v1",
+        Accept: "application/json",
+        Authorization: `Bearer ${LIMEWIRE_API_KEY}`, // Add the API key from the environment variables
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        aspect_ratio: "1:1", // Default to square aspect ratio; this can be adjusted as needed
+      }),
+    });
 
-    if (output && output.length > 0) {
-      const imageUrl = output[0];
-      console.log(imageUrl);
+    const result = await response.json();
+
+    if (response.ok && result.status === "COMPLETED") {
+      // Extract the asset_url from the data array
+      const imageUrl = result.data[0].asset_url;
+
       res.status(200).json({
         imageUrl: imageUrl,
-        message: "Image generated successfully using Replicate.",
+        message: "Image generated successfully using Limewire.",
       });
     } else {
-      throw new Error("No image was generated");
+      res
+        .status(500)
+        .json({ message: result.failure_reason || "Image generation failed." });
     }
   } catch (error) {
-    console.error("Error generating image:", error);
-    res.status(500).json({
-      error: error.message || "An error occurred while generating the image",
-      details: error.response ? error.response.data : null,
-    });
+    console.error(error);
+    res
+      .status(500)
+      .send(error?.message || "An error occurred while generating the image");
   }
 });
 
