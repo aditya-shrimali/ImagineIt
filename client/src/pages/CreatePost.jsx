@@ -21,7 +21,7 @@ const CreatePost = () => {
     if (form.name && form.prompt) {
       setLoading(true);
       try {
-        // Call the backend Limewire image generation route
+        // Call the backend image generation route
         const response = await fetch("http://localhost:8080/api/v1/replicate", {
           method: "POST",
           headers: {
@@ -29,6 +29,7 @@ const CreatePost = () => {
           },
           body: JSON.stringify({
             prompt: form.prompt, // Send the prompt for image generation
+            num_images: 1, // Specify the number of images to generate
             aspect_ratio: "1:1", // Optional, adjust based on user input or requirements
           }),
         });
@@ -48,7 +49,7 @@ const CreatePost = () => {
           // Example: you can render the image with <img src={form.photo} alt="Generated Image" />
           navigate("/");
         } else {
-          alert("Error: " + data.message);
+          alert("Error: " + (data.message || "Something went wrong"));
         }
       } catch (err) {
         alert("An error occurred: " + err.message);
@@ -73,21 +74,30 @@ const CreatePost = () => {
     if (form.prompt) {
       try {
         setGeneratingImg(true);
+
+        // Send a POST request to your backend
         const response = await fetch("http://localhost:8080/api/v1/replicate", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ prompt: form.prompt }),
+          body: JSON.stringify({
+            prompt: form.prompt,
+            num_images: 1, // or any other parameters required by your API
+          }),
         });
 
+        // Check if the response is okay
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
+        // Parse the response data as JSON
         const data = await response.json();
 
+        // Check if the image URL exists in the response data
         if (data.imageUrl) {
+          // Set the image URL directly if it's a data URL
           setForm({ ...form, photo: data.imageUrl });
         } else {
           throw new Error("No image URL received from the server");
@@ -96,7 +106,7 @@ const CreatePost = () => {
         console.error("Error generating image:", error);
         alert(error.message || "An error occurred while generating the image");
       } finally {
-        setGeneratingImg(false);
+        setGeneratingImg(false); // Reset the loading state
       }
     } else {
       alert("Please enter a prompt");
