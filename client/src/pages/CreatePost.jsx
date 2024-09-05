@@ -22,17 +22,20 @@ const CreatePost = () => {
       setLoading(true);
       try {
         // Call the backend image generation route
-        const response = await fetch("http://localhost:8080/api/v1/replicate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            prompt: form.prompt, // Send the prompt for image generation
-            num_images: 1, // Specify the number of images to generate
-            aspect_ratio: "1:1", // Optional, adjust based on user input or requirements
-          }),
-        });
+        const response = await fetch(
+          "https://imagine-it-kappa.vercel.app/api/v1/replicate",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              prompt: form.prompt, // Send the prompt for image generation
+              num_images: 1, // Specify the number of images to generate
+              aspect_ratio: "1:1", // Optional, adjust based on user input or requirements
+            }),
+          }
+        );
 
         const data = await response.json();
 
@@ -76,16 +79,19 @@ const CreatePost = () => {
         setGeneratingImg(true);
 
         // Send a POST request to your backend
-        const response = await fetch("http://localhost:8080/api/v1/replicate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            prompt: form.prompt,
-            num_images: 1, // or any other parameters required by your API
-          }),
-        });
+        const response = await fetch(
+          "https://imagine-it-kappa.vercel.app/api/v1/replicate",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              prompt: form.prompt,
+              num_images: 1, // or any other parameters required by your API
+            }),
+          }
+        );
 
         // Check if the response is okay
         if (!response.ok) {
