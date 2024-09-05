@@ -17,13 +17,12 @@ const CreatePost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Ensure all required fields are present
-    if (form.name && form.prompt) {
+    if (form.prompt) {
       setLoading(true);
       try {
-        // Call the backend image generation route
+        // Send a POST request to your backend image generation route
         const response = await fetch(
-          "https://imagine-it-kappa.vercel.app/api/v1/post",
+          "https://dalle-arbb.onrender.com/api/v1/post",
           {
             method: "POST",
             headers: {
@@ -31,8 +30,8 @@ const CreatePost = () => {
             },
             body: JSON.stringify({
               prompt: form.prompt, // Send the prompt for image generation
-              num_images: 1, // Specify the number of images to generate
-              aspect_ratio: "1:1", // Optional, adjust based on user input or requirements
+              num_images: 1, // Specify the number of images to generate (if needed)
+              aspect_ratio: "1:1", // Optional, adjust based on requirements
             }),
           }
         );
@@ -40,17 +39,14 @@ const CreatePost = () => {
         const data = await response.json();
 
         if (response.ok) {
-          // Update form with the generated image URL
+          // Assuming the backend sends back the image URL
           setForm({
             ...form,
-            photo: data.imageUrl, // Store the image URL in the 'photo' field
+            photo: data.imageUrl, // Update the form with the generated image URL
           });
 
           alert("Image generated successfully!");
-
-          // Optionally, display the image or navigate
-          // Example: you can render the image with <img src={form.photo} alt="Generated Image" />
-          navigate("/");
+          navigate("/"); // Navigate or perform any other action
         } else {
           alert("Error: " + (data.message || "Something went wrong"));
         }
@@ -60,7 +56,7 @@ const CreatePost = () => {
         setLoading(false);
       }
     } else {
-      alert("Please provide all the fields");
+      alert("Please generate an image with proper details");
     }
   };
 
