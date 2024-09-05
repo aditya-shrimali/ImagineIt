@@ -84,7 +84,7 @@ const Home = () => {
       </div>
       <div className="mt-2">
         {loading ? (
-          <div className="flex justify-center items-center">
+          <div className="flex justify-center items-center h-[65vh]">
             <Loader />
           </div>
         ) : (
