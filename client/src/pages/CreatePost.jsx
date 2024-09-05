@@ -16,24 +16,42 @@ const CreatePost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.name && form.prompt && form.photo) {
+
+    // Ensure all required fields are present
+    if (form.name && form.prompt) {
       setLoading(true);
       try {
-        const response = await fetch(
-          "https://imagine-it-kappa.vercel.app/api/v1/post",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(form),
-          }
-        );
-        await response.json();
-        alert("Success");
-        navigate("/");
+        // Call the backend Limewire image generation route
+        const response = await fetch("http://localhost:8080/api/v1/replicate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prompt: form.prompt, // Send the prompt for image generation
+            aspect_ratio: "1:1", // Optional, adjust based on user input or requirements
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Update form with the generated image URL
+          setForm({
+            ...form,
+            photo: data.imageUrl, // Store the image URL in the 'photo' field
+          });
+
+          alert("Image generated successfully!");
+
+          // Optionally, display the image or navigate
+          // Example: you can render the image with <img src={form.photo} alt="Generated Image" />
+          navigate("/");
+        } else {
+          alert("Error: " + data.message);
+        }
       } catch (err) {
-        alert(err);
+        alert("An error occurred: " + err.message);
       } finally {
         setLoading(false);
       }
@@ -55,16 +73,13 @@ const CreatePost = () => {
     if (form.prompt) {
       try {
         setGeneratingImg(true);
-        const response = await fetch(
-          "https://imagine-it-kappa.vercel.app/api/v1/replicate",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ prompt: form.prompt }),
-          }
-        );
+        const response = await fetch("http://localhost:8080/api/v1/replicate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt: form.prompt }),
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
