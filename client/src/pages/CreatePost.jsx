@@ -22,7 +22,7 @@ const CreatePost = () => {
       try {
         // Send a POST request to your backend to save the post
         const response = await fetch(
-          "https://dalle-arbb.onrender.com/api/v1/posts",
+          "https://imagine-it-kappa.vercel.app/api/v1/post",
           {
             method: "POST",
             headers: {
