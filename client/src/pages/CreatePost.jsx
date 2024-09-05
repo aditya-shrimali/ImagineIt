@@ -17,21 +17,21 @@ const CreatePost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (form.prompt) {
+    if (form.prompt && form.photo) {
       setLoading(true);
       try {
-        // Send a POST request to your backend image generation route
+        // Send a POST request to your backend to save the post
         const response = await fetch(
-          "https://dalle-arbb.onrender.com/api/v1/post",
+          "https://dalle-arbb.onrender.com/api/v1/posts",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              prompt: form.prompt, // Send the prompt for image generation
-              num_images: 1, // Specify the number of images to generate (if needed)
-              aspect_ratio: "1:1", // Optional, adjust based on requirements
+              name: form.name, // Send the user's name
+              prompt: form.prompt, // Send the prompt
+              photo: form.photo, // Send the image URL or base64 string
             }),
           }
         );
@@ -39,13 +39,7 @@ const CreatePost = () => {
         const data = await response.json();
 
         if (response.ok) {
-          // Assuming the backend sends back the image URL
-          setForm({
-            ...form,
-            photo: data.imageUrl, // Update the form with the generated image URL
-          });
-
-          alert("Image generated successfully!");
+          alert("Post created successfully!");
           navigate("/"); // Navigate or perform any other action
         } else {
           alert("Error: " + (data.message || "Something went wrong"));
