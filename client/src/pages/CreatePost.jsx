@@ -23,7 +23,7 @@ const CreatePost = () => {
       try {
         // Call the backend image generation route
         const response = await fetch(
-          "https://imagine-it-kappa.vercel.app/api/v1/replicate",
+          "https://imagine-it-kappa.vercel.app/api/v1/post",
           {
             method: "POST",
             headers: {
