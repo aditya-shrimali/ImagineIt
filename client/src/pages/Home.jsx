@@ -23,7 +23,8 @@ const Home = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          "https://imagine-it-kappa.vercel.app/api/v1/post",
+          // "http://localhost:8080/api/v1/post",
+          "https://imagine-backend-kappa.vercel.app/api/v1/post",
           {
             method: "GET",
             headers: {

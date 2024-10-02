@@ -12,13 +12,17 @@ const Login = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:8080/api/v1/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        // "http://localhost:8080/api/v1/user/login",
+        "https://imagine-backend-kappa.vercel.app/api/v1/user/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
       console.log(response);
       if (!response.ok) {
         throw new Error("Network response was not ok");

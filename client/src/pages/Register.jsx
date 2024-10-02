@@ -15,7 +15,8 @@ const Register = () => {
     console.log(data);
     try {
       const response = await fetch(
-        "http://localhost:8080/api/v1/user/register",
+        // "http://localhost:8080/api/v1/user/register",
+        "https://imagine-backend-kappa.vercel.app/api/v1/user/register",
         {
           method: "POST",
           headers: {
