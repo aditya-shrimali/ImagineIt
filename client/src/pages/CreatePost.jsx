@@ -40,7 +40,7 @@ const CreatePost = () => {
 
         if (response.ok) {
           alert("Post created successfully!");
-          navigate("/"); // Navigate or perform any other action
+          navigate("/home"); // Navigate or perform any other action
         } else {
           alert("Error: " + (data.message || "Something went wrong"));
         }
