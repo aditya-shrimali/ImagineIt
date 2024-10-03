@@ -22,8 +22,7 @@ const CreatePost = () => {
       try {
         // Send a POST request to your backend to save the post
         const response = await fetch(
-          // "http://localhost:8080/api/v1/post",
-          "https://imagine-backend-kappa.vercel.app/api/v1/post",
+          "https://imagine-it-backend.vercel.app/api/v1/post",
           {
             method: "POST",
             headers: {
@@ -71,8 +70,7 @@ const CreatePost = () => {
 
         // Send a POST request to your backend
         const response = await fetch(
-          // "http://localhost:8080/api/v1/replicate",
-          "https://imagine-backend-kappa.vercel.app/api/v1/replicate",
+          "https://imagine-it-backend.vercel.app/api/v1/replicate",
           {
             method: "POST",
             headers: {
