@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { Card, Loader, FormField } from "../components";
 
 const RenderCards = ({ data, title }) => {
@@ -9,6 +10,10 @@ const RenderCards = ({ data, title }) => {
   return (
     <h2 className="mt-5 fomt-bold text-blue-500 text-xl uppercase">{title}</h2>
   );
+};
+RenderCards.propTypes = {
+  data: PropTypes.array,
+  title: PropTypes.string.isRequired,
 };
 
 const Home = () => {
@@ -23,7 +28,8 @@ const Home = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          "https://imagine-it-backend.vercel.app/api/v1/post",
+          // "https://imagine-it-backend.vercel.app/api/v1/post",
+          "http://localhost:8080/api/v1/post",
           {
             method: "GET",
             headers: {
