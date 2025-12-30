@@ -71,8 +71,8 @@ const CreatePost = () => {
 
         // Send a POST request to your backend
         const response = await fetch(
-          // "https://imagine-it-backend.vercel.app/api/v1/replicate",
-          "http://localhost:8080/api/v1/replicate",
+          "https://imagine-it-backend.vercel.app/api/v1/replicate",
+          // "http://localhost:8080/api/v1/replicate",
           {
             method: "POST",
             headers: {
