@@ -28,8 +28,8 @@ const Home = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          // "https://imagine-it-backend.vercel.app/api/v1/post",
-          "http://localhost:8080/api/v1/post",
+          "https://imagine-it-backend.vercel.app/api/v1/post",
+          // "http://localhost:8080/api/v1/post",
           {
             method: "GET",
             headers: {
@@ -61,7 +61,7 @@ const Home = () => {
             .toLowerCase()
             .includes(
               searchText.toLowerCase() ||
-                post.prompt.toLowerCase().includes(searchText.toLowerCase())
+              post.prompt.toLowerCase().includes(searchText.toLowerCase())
             )
         );
         setSearchResults(filteredPosts);
